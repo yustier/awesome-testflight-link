@@ -78,7 +78,7 @@ jobs:
       - name: Check changes
         id: detect_changes
         run: |
-          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*Minecraft Preview')
+          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*1Password')
           echo "::set-output name=changed::${changed_lines}"
 
       - name: Send Message to Discord
