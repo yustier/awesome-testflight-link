@@ -76,7 +76,7 @@ jobs:
           git push origin main
 
           : # README.md の "Minecraft Preview" を含む行に変更があった場合，メールを送る
-          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*1Password')
+          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*1Password' || true)
           echo "::set-output name=changed::${changed_lines}"
 
       - name: Send Message to Discord
