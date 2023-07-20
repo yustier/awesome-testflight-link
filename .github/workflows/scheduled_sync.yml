@@ -35,6 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Merge upstream
+        id: merge_upstream
         # 以下の設定を変更してください。REPO_FORK が fork 元です。
         # コミット／マージを行うユーザー情報とフォーク元の git リポジトリの URL（要変更）
         env:
@@ -74,18 +75,15 @@ jobs:
           git merge --no-edit upstream/main
           git push origin main
 
-      # README.md の "Minecraft Preview" を含む行に変更があった場合，メールを送る
-      - name: Check changes
-        id: detect_changes
-        run: |
+          : # README.md の "Minecraft Preview" を含む行に変更があった場合，メールを送る
           changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*1Password')
           echo "::set-output name=changed::${changed_lines}"
 
       - name: Send Message to Discord
         if:
-          steps.detect_changes.outputs.changed != ''
+          steps.merge_upstream.outputs.changed != ''
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          MESSAGE: ${{ steps.detect_changes.outputs.changed }}
+          MESSAGE: ${{ steps.merge_upstream.outputs.changed }}
         run: |
           curl -H "Content-Type: application/json" -X POST -d '{"content": "'"${MESSAGE}"'"}' "${DISCORD_WEBHOOK_URL}"
