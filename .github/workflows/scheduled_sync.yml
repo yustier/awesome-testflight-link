@@ -9,7 +9,7 @@ name: Merge upstream branches
 
 # Triggers the action as scheduled
 on:
-  # Runs on 10 minutes past every hour（毎 n 時 10 分に実行）
+  # Runs on every 6 hours starting at 2:00（毎 6n+2 時 00 分に実行）
   schedule:
     # cron の設定: https://crontab.guru/examples.html
     # GitHub にはユーザーごとに実行可能な時間の制限があります。合計時間が制限を
@@ -27,7 +27,7 @@ on:
     #         │ │ │ │ │
     #         │ │ │ │ │
     #         * * * * *
-    - cron:  '10 */1 * * *'
+    - cron:  '0 2/6 * * *'
 
 jobs:
   merge:
@@ -75,15 +75,18 @@ jobs:
           git merge --no-edit upstream/main
           git push origin main
 
-          : # README.md の "Minecraft Preview" を含む行に変更があった場合，メールを送る
-          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*1Password' || true)
+      # README.md の "AppRaven" を含む行に変更があった場合，Discordにメッセージを送る
+      - name: Check update
+        id: check_update
+        run: |
+          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*AppRaven' || true)
           echo "::set-output name=changed::${changed_lines}"
 
       - name: Send Message to Discord
         if:
-          steps.merge_upstream.outputs.changed != ''
+          steps.check_update.outputs.changed != ''
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          MESSAGE: ${{ steps.merge_upstream.outputs.changed }}
+          MESSAGE: ${{ steps.check_update.outputs.changed }}
         run: |
           curl -H "Content-Type: application/json" -X POST -d '{"content": "'"${MESSAGE}"'"}' "${DISCORD_WEBHOOK_URL}"
