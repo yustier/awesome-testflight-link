@@ -90,5 +90,5 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           MESSAGE: ${{ steps.check_update.outputs.changed }}
         run: |
-          MESSAGE += "\n\nhttps://github.com/yustier/awesome-testflight-link/"
+          echo "MESSAGE=$MESSAGE"\\n\\nhttps://github.com/yustier/awesome-testflight-link/"" >> $GITHUB_ENV
           curl -H "Content-Type: application/json" -d '{"username": "Awesome Testflight Apps Update", "content": "'"${MESSAGE}"'"}' "${DISCORD_WEBHOOK_URL}"
