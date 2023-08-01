@@ -79,7 +79,7 @@ jobs:
       - name: Check update
         id: check_update
         run: |
-          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*AppRaven' || true)
+          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*(AppRaven|Norton|Pythonista)' || true)
           echo "::set-output name=changed::${changed_lines}"
 
       - name: Send Message to Discord
