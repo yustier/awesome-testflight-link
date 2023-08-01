@@ -5,7 +5,7 @@
 #   - https://stackoverflow.com/a/61574295/12102603 by N1ngu @ StackOverflow (EN)
 #   - https://qiita.com/KEINOS/items/3bcaa6cea853f6b63475 by KEINOS @ Qiita (JA)
 
-name: Merge upstream branches
+name: Notify upstream update
 
 # Triggers the action as scheduled
 on:
@@ -79,7 +79,8 @@ jobs:
       - name: Check update
         id: check_update
         run: |
-          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*(AppRaven|Norton|Pythonista)' || true)
+          : # changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep '^\+.*(AppRaven|Norton|Pythonista)' || true)
+          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md || true)
           echo "::set-output name=changed::${changed_lines}"
 
       - name: Send Message to Discord
@@ -89,4 +90,5 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           MESSAGE: ${{ steps.check_update.outputs.changed }}
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{"content": "'"${MESSAGE}"'"}' "${DISCORD_WEBHOOK_URL}"
+          MESSAGE += "\n\nhttps://github.com/yustier/awesome-testflight-link/"
+          curl -H "Content-Type: application/json" -d '{"username": "Awesome Testflight Apps Update", "content": "'"${MESSAGE}"'"}' "${DISCORD_WEBHOOK_URL}"
