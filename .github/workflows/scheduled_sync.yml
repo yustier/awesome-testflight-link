@@ -79,9 +79,9 @@ jobs:
       - name: Check update
         id: check_update
         run: |
-          changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md | grep -E '^\+[^+].+\|\sY\s\|' | tr '\n' '\\n')
-          : # changed_lines=$(git diff --unified=0 HEAD^ HEAD README.md grep '^\+.*(AppRaven|Norton|Pythonista)' || true)
-          echo "::set-output name=changed::${changed_lines}"
+          CHANGED_LINES=$(git diff --unified=0 HEAD^ HEAD README.md | grep -E '^\+[^+].+\|\sY\s\|' | tr -d '[]()')
+          : # CHANGED_LINES=$(git diff --unified=0 HEAD^ HEAD README.md grep '^\+.*(AppRaven|Norton|Pythonista)' || true)
+          echo "::set-output name=changed::${CHANGED_LINES}"
 
       # Discord にメッセージを送信
       - name: Send Message to Discord
