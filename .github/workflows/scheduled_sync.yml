@@ -9,7 +9,7 @@ name: Notify upstream update
 
 # Triggers the action as scheduled
 on:
-  # Runs on every 6 hours starting at 2:00（毎 6n+2 時 00 分に実行）
+  # Runs on 3:30 every day（毎 12 時 30 分 (JST) に実行）
   schedule:
     # cron の設定: https://crontab.guru/examples.html
     # GitHub にはユーザーごとに実行可能な時間の制限があります。合計時間が制限を
@@ -27,7 +27,7 @@ on:
     #         │ │ │ │ │
     #         │ │ │ │ │
     #         * * * * *
-    - cron:  '0 2/6 * * *'
+    - cron:  '30 3 * * *'
 
 jobs:
   merge:
@@ -79,7 +79,7 @@ jobs:
       - name: Check update
         id: check_update
         run: |
-          CHANGED_LINES=$(git diff --unified=0 HEAD^ HEAD README.md | grep -E '^\+[^+].+\|\sY\s\|' | tr -d '[]()')
+          CHANGED_LINES=$(git diff --unified=0 HEAD^ HEAD README.md | grep -E '^\+[^+].+\|\sY\s\|' | tr '[]()' ' ' | sed 's/$/\\n/' | tr -d '\n')
           : # CHANGED_LINES=$(git diff --unified=0 HEAD^ HEAD README.md grep '^\+.*(AppRaven|Norton|Pythonista)' || true)
           echo "::set-output name=changed::${CHANGED_LINES}"
 
